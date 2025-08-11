@@ -1,0 +1,45 @@
+services:
+  kong:
+    image: kong:2.4
+    container_name: kong
+    environment:
+      KONG_DATABASE: off
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yaml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+    volumes:
+      - ./kong/kong.yaml:/usr/local/kong/declarative/kong.yaml
+    ports:
+      - "8000:8000"
+    depends_on:
+      - httpbin
+      - grafana-tempo
+
+  httpbin:
+    image: kong/httpbin
+    container_name: httpbin
+    ports:
+      - 8080
+
+  grafana-tempo:
+    image: grafana/tempo:2.4.1
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./grafana/tempo.yaml:/etc/tempo.yaml
+    ports:
+      - 9411
+      - 3200
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+    - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
