@@ -24,11 +24,10 @@ The entire project runs in **Docker Compose**, making it easy to spin up a local
 .
 ├── docker-compose.yml
 ├── kong/
-│   ├── kong.conf
 │   └── kong.yml
 ├── grafana/
-│   └── provisioning/
-│       └── datasources/
+│   └── tempo.yaml
+│   └── datasource.yaml
 └── README.md
 ```
 
